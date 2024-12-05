@@ -119,7 +119,73 @@ class Solution:
     
     def solve_puzzle_2(self):
 
-        pass
+        """
+        Find all possible X-MAS (two MAS in shape of X)
+        Within the X, each MAS can be written forwards or backwards.
+
+        Returns:
+        int: total possible x-masses.
+        """
+
+        total_x_masses = 0
+
+        try:
+            
+            for i in range(len(self.word_search)):
+
+                row = self.word_search[i]
+
+                for j in range(len(row)):
+
+                    # Rows Forward Range Check
+
+                    rfr_check = (i <= len(self.word_search) - 2)
+
+                    # Rows Backward Range Check
+
+                    rbr_check = (i - 1 >= 0)
+                    
+                    # Columns Forward Range Check
+
+                    cfr_check = (j <= len(row) - 2)
+
+                    # Columns Backward Range Check
+
+                    cbr_check = (j - 1 >= 0)
+
+                    if row[j] == 'A':
+
+                        # Diagonal Check
+
+                        if cfr_check and cbr_check and rfr_check and rbr_check:
+
+                            mas_count = 0
+                            
+                            if self.word_search[i-1][j+1] + row[j] + self.word_search[i+1][j-1] == 'MAS':
+
+                                mas_count += 1
+
+                            if self.word_search[i+1][j-1] + row[j] + self.word_search[i-1][j+1] == 'MAS':
+
+                                mas_count += 1
+                            
+                            if self.word_search[i-1][j-1] + row[j] + self.word_search[i+1][j+1] == 'MAS':
+
+                                mas_count += 1
+                            
+                            if self.word_search[i+1][j+1] + row[j] + self.word_search[i-1][j-1] == 'MAS':
+
+                                mas_count += 1
+
+                            if mas_count == 2:
+
+                                total_x_masses += 1
+
+        except Exception as e:
+
+            print("Error in solve_puzzle_2():", e)
+
+        return total_x_masses
 
 if __name__ == "__main__":
 
@@ -129,7 +195,6 @@ if __name__ == "__main__":
 
     print("Answer of Puzzle#1:", answer_puzzle_1)
 
+    answer_puzzle_2 = s.solve_puzzle_2()
 
-    # answer_puzzle_2 = s.solve_puzzle_2()
-
-    # print("Answer of Puzzle#2:", answer_puzzle_2)
+    print("Answer of Puzzle#2:", answer_puzzle_2)
