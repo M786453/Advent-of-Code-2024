@@ -147,34 +147,45 @@ class Solution:
 
                             if n in validated_update:
                                 
-                                if n not in validated_update[:page_number_index]:
+                                if n in validated_update[:page_number_index]:
 
-                                    validated_update.remove(n)
+                                    # If page number is already present in required part of list, then move to next page number
 
-                                    validated_update.insert(page_number_index,n)
+                                    continue 
 
-                                    page_number_index += 1
+                                else:
 
-                            else:
+                                    # If page number is not present in required part of list, then remove it
 
-                                validated_update.insert(page_number_index,n)
+                                    validated_update.remove(n) 
 
-                                page_number_index += 1
+                            # Insert the page number before the current page number
+
+                            validated_update.insert(page_number_index,n)
+
+                            page_number_index += 1
                         
                         elif n in rules["after"]:
 
                             if n in validated_update:
                                 
-                                if n not in validated_update[page_number_index+1:]:
+                                if n in validated_update[page_number_index+1:]:
+
+                                    # If page number is already present in required part of list, then move to next page number
+
+                                    continue
+                                
+                                else:
+
+                                    # If page number is not present in required part of list, then remove it
 
                                     validated_update.remove(n)
 
                                     page_number_index -= 1
 
-                                    validated_update.insert(page_number_index+1, n)
-                            else:
+                            # Insert the page number after the current page number
 
-                                validated_update.insert(page_number_index+1, n)
+                            validated_update.insert(page_number_index+1, n)
 
                 total += int(validated_update[len(validated_update)//2])
 
