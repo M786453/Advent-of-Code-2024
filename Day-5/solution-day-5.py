@@ -61,6 +61,8 @@ class Solution:
 
         total = 0
 
+        invalid_updates = []
+
         try:
 
             for update in self.manual_updates:
@@ -106,25 +108,89 @@ class Solution:
                 if is_valid_update:
 
                     total += int(update[update_length//2])
+                
+                else:
+
+                    invalid_updates.append(update)
 
         except Exception as e:
 
             print("Error in solve_puzzle_1():", e)
 
-        return total
+        return total, invalid_updates
     
-    def solve_puzzle_2(self):
+    def solve_puzzle_2(self, invalid_updates):
 
-        pass
+        total = 0
+
+        try:
+
+            for update in invalid_updates:                
+
+                validated_update = [update[0]]
+
+                for page_number in update:
+
+                    page_number_index = validated_update.index(page_number)
+
+                    rules = self.printing_rules[page_number]
+
+                    update_copy = list(update)
+
+                    # Removed current page number from update in order to check rules (relevant to current page number) for other page numbers
+
+                    update_copy.remove(page_number) 
+
+                    for n in update_copy:                        
+
+                        if n in rules["before"]:
+
+                            if n in validated_update:
+                                
+                                if n not in validated_update[:page_number_index]:
+
+                                    validated_update.remove(n)
+
+                                    validated_update.insert(page_number_index,n)
+
+                                    page_number_index += 1
+
+                            else:
+
+                                validated_update.insert(page_number_index,n)
+
+                                page_number_index += 1
+                        
+                        elif n in rules["after"]:
+
+                            if n in validated_update:
+                                
+                                if n not in validated_update[page_number_index+1:]:
+
+                                    validated_update.remove(n)
+
+                                    page_number_index -= 1
+
+                                    validated_update.insert(page_number_index+1, n)
+                            else:
+
+                                validated_update.insert(page_number_index+1, n)
+
+                total += int(validated_update[len(validated_update)//2])
+
+        except Exception as e:
+            print("Error in solve_puzzle_2():", e)
+
+        return total
 
 if __name__ == "__main__":
 
     s = Solution('input-day-5.txt')
 
-    answer_puzzle_1 = s.solve_puzzle_1()
+    answer_puzzle_1, invalid_updates = s.solve_puzzle_1()
 
     print("Answer of Puzzle#1:", answer_puzzle_1)
 
-    # answer_puzzle_2 = s.solve_puzzle_2()
+    answer_puzzle_2 = s.solve_puzzle_2(invalid_updates)
 
-    # print("Answer of Puzzle#2:", answer_puzzle_2)
+    print("Answer of Puzzle#2:", answer_puzzle_2)
