@@ -6,6 +6,10 @@ Author: Muhammad Ahtesham Sarwar
 
 class Solution:
 
+    def __init__(self, filename):
+
+        self.locations_lists = self.read_input(filename=filename)
+
     def read_input(self,filename):
 
         data = [[],[]]
@@ -30,17 +34,15 @@ class Solution:
 
         return data
     
-    def solve_puzzle_1(self, input_filename):
+    def solve_puzzle_1(self):
 
         total_distance = 0
 
         try:
 
-            locations_lists = self.read_input(filename=input_filename)
+            sorted_loc_list_1 = sorted(self.locations_lists[0])
 
-            sorted_loc_list_1 = sorted(locations_lists[0])
-
-            sorted_loc_list_2 = sorted(locations_lists[1])
+            sorted_loc_list_2 = sorted(self.locations_lists[1])
 
             for index in range(len(sorted_loc_list_1)):
 
@@ -51,11 +53,31 @@ class Solution:
             print("Error in solve():", e)
 
         return total_distance
-
     
+    def solve_puzzle_2(self):
+
+        similarity_score = 0
+
+        try:
+
+            for e in self.locations_lists[0]:
+
+                similarity_score += e * self.locations_lists[1].count(e)
+
+        except Exception as e:
+
+            print("Error in solve_puzzle_2():", e)
+
+        return similarity_score
+
 if __name__ == "__main__":
 
-    answer_puzzle_1 = Solution().solve_puzzle_1('input-day-1.txt')
+    s = Solution('input-day-1.txt')
+
+    answer_puzzle_1 = s.solve_puzzle_1()
 
     print("Answer of Puzzle#1:", answer_puzzle_1)
 
+    answer_puzzle_2 = s.solve_puzzle_2()
+
+    print("Answer of Puzzle#2:", answer_puzzle_2)
