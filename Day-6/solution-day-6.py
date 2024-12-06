@@ -11,8 +11,6 @@ class Solution:
 
         self.map = self.read_input(filename=filename)
 
-        print(len(self.map))
-
     def read_input(self,filename):
 
         data = ""
@@ -69,128 +67,51 @@ class Solution:
             
             guard_row_index, guard_col_index = self.find_guard_cords()
 
+            guard_standpoint_dict = {
+                '^': [(-1,0), '>'],
+                'v': [(1,0), '<'],
+                '>': [(0,1), 'v'],
+                '<': [(0,-1), '^']
+            }
+
             while True:
-
-                if guard_standpoint == '^':
                     
-                    if guard_row_index-1 >= 0:
+                if (guard_standpoint == '^' and guard_row_index-1 >= 0) or \
+                    (guard_standpoint == 'v' and guard_row_index+1 < max_rows) or \
+                        (guard_standpoint == '>' and guard_col_index+1 < max_cols) or \
+                            (guard_standpoint == '<' and guard_col_index-1 >= 0):
 
-                        if self.map[guard_row_index-1][guard_col_index] == '#': # Obstacle, turn right
-                            
-                            self.map[guard_row_index][guard_col_index] = '>'
+                    tmp_row_index = guard_row_index + guard_standpoint_dict[guard_standpoint][0][0]
 
-                            guard_standpoint = '>'
+                    tmp_col_index = guard_col_index + guard_standpoint_dict[guard_standpoint][0][1]
 
-                            guard_engaged_obtacles.append([(guard_row_index-1, guard_col_index), guard_standpoint])
+                    if self.map[tmp_row_index][tmp_col_index] == '#': # Obstacle, turn right
+                        
+                        self.map[guard_row_index][guard_col_index] = guard_standpoint_dict[guard_standpoint][1] # Guard new standpoint
 
-                        else:
+                        guard_standpoint = guard_standpoint_dict[guard_standpoint][1] # Guard new standpoint
 
-                            self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-
-                            guard_row_index -= 1
-
-                            self.map[guard_row_index][guard_col_index] = '^' # No obstacle, move forward
-
-                            guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
+                        guard_engaged_obtacles.append([(tmp_row_index, tmp_col_index), guard_standpoint])
 
                     else:
 
-                        guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
-
                         self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-                        
-                        break # Guard moves out of map
 
-                elif guard_standpoint == '>':
+                        guard_row_index = tmp_row_index
 
-                    if guard_col_index+1 < max_cols:
+                        guard_col_index = tmp_col_index
 
-                        if self.map[guard_row_index][guard_col_index+1] == '#': # Obstacle, turn right
-                            
-                            self.map[guard_row_index][guard_col_index] = 'v'
-
-                            guard_standpoint = 'v'
-
-                            guard_engaged_obtacles.append([(guard_row_index, guard_col_index+1), guard_standpoint])
-
-                        else:
-
-                            self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-
-                            guard_col_index += 1
-
-                            self.map[guard_row_index][guard_col_index] = '>' # No obstacle, move forward
-
-                            guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
-
-                    else:
+                        self.map[guard_row_index][guard_col_index] = guard_standpoint # No obstacle, move forward
 
                         guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
 
-                        self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-                        
-                        break # Guard moves out of map
+                else:
 
-                elif guard_standpoint == 'v':
+                    guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
 
-                    if guard_row_index+1 < max_rows:
-
-                        if self.map[guard_row_index+1][guard_col_index] == '#': # Obstacle, turn right
-                            
-                            self.map[guard_row_index][guard_col_index] = '<'
-
-                            guard_standpoint = '<'
-
-                            guard_engaged_obtacles.append([(guard_row_index+1, guard_col_index), guard_standpoint])
-
-                        else:
-
-                            self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-
-                            guard_row_index += 1
-
-                            self.map[guard_row_index][guard_col_index] = 'v' # No obstacle, move forward
-
-                            guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
-
-                    else:
-
-                        guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
-
-                        self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-                        
-                        break # Guard moves out of map
-
-                elif guard_standpoint == '<':
-
-                    if guard_col_index-1 >= 0:
-
-                        if self.map[guard_row_index][guard_col_index-1] == '#': # Obstacle, turn right
-                            
-                            self.map[guard_row_index][guard_col_index] = '^'
-
-                            guard_standpoint = '^'
-
-                            guard_engaged_obtacles.append([(guard_row_index, guard_col_index-1), guard_standpoint])
-
-                        else:
-
-                            self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-
-                            guard_col_index -= 1
-
-                            self.map[guard_row_index][guard_col_index] = '<' # No obstacle, move forward
-
-                            guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
-
-                    else:
-
-                        guard_visited_distinct_positions.add(f'{guard_row_index}i{guard_col_index}j')
-
-                        self.map[guard_row_index][guard_col_index] = 'X' # Footprint
-                        
-                        break # Guard moves out of map
-
+                    self.map[guard_row_index][guard_col_index] = 'X' # Footprint
+                    
+                    break # Guard moves out of map
 
         except Exception as e:
 
@@ -261,12 +182,12 @@ class Solution:
 
 if __name__ == "__main__":
 
-    s = Solution('sample-input-day-6.txt')
+    s = Solution('input-day-6.txt')
 
     answer_puzzle_1, guard_visited_distinct_positions, guard_engaged_obtacles = s.solve_puzzle_1()
 
     print("Answer of Puzzle#1:", answer_puzzle_1)
 
-    answer_puzzle_2 = s.solve_puzzle_2(guard_visited_distinct_positions, guard_engaged_obtacles)
+    # answer_puzzle_2 = s.solve_puzzle_2(guard_visited_distinct_positions, guard_engaged_obtacles)
 
-    print("Answer of Puzzle#2:", answer_puzzle_2)
+    # print("Answer of Puzzle#2:", answer_puzzle_2)
