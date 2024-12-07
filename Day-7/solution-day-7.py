@@ -3,6 +3,7 @@ Day#: 7
 Problem Title: Bridge Repair
 Author: Muhammad Ahtesham Sarwar
 """
+from itertools import permutations
 
 class Solution:
 
@@ -44,7 +45,7 @@ class Solution:
 
         return data
     
-    def evaluate_combination(self, combination):
+    def evaluate_combination(self, combination, test_value):
 
         result = -1
 
@@ -74,6 +75,9 @@ class Solution:
                             result = result * val
                         elif op == '+':
                             result = result + val
+                
+                if result > test_value:
+                    break # Stop evaluating because result becomes greater than test_value
 
         except Exception as e:
 
@@ -87,7 +91,7 @@ class Solution:
         Generate all possible combinations of operators
         """
 
-        combinations = []
+        combinations = set()
 
         op_dict = {'*': '+', '+': '*'}
 
@@ -98,15 +102,13 @@ class Solution:
 
                 for i in range(1,total_operator_positions+1):
 
-                    tmp_sub_comb = [op] * i
+                    new_op_comb = tuple([op] * i + op_comb[i:])
 
-                    for index in range(total_operator_positions):
+                    if len(new_op_comb) == total_operator_positions and new_op_comb not in combinations:
 
-                        new_op_comb = op_comb[:index] + tmp_sub_comb + op_comb[index+i:]
+                        combinations.add(new_op_comb)
 
-                        if len(new_op_comb) == total_operator_positions and new_op_comb not in combinations:
-
-                            combinations.append(new_op_comb)
+                        combinations = combinations.union(set(permutations(new_op_comb)))        
 
         except Exception as e:
 
@@ -152,7 +154,11 @@ class Solution:
 
         total = 0
 
+        counter = 1
+
         for test in self.data:
+
+            print("Counter:", counter)
 
             test_value = test[0]
 
@@ -162,11 +168,13 @@ class Solution:
 
             for comb in combinations:
 
-                if s.evaluate_combination(comb) == test_value:
+                if s.evaluate_combination(comb, test_value) == test_value:
 
                     total += test_value
 
                     break
+            
+            counter += 1
 
         return total
     
@@ -176,17 +184,11 @@ class Solution:
 
 if __name__ == "__main__":
 
-    s = Solution('test-input-day-7.txt')
+    s = Solution('input-day-7.txt')
 
-    combinations = s.generate_combinations(['1','2','3','4','5','6'])
+    answer_puzzle_1 = s.solve_puzzle_1()
 
-    for comb in combinations:
-
-        print(comb)
-
-    # answer_puzzle_1 = s.solve_puzzle_1()
-
-    # print("Answer of Puzzle#1:", answer_puzzle_1)
+    print("Answer of Puzzle#1:", answer_puzzle_1)
 
     # answer_puzzle_2 = s.solve_puzzle_2()
 
