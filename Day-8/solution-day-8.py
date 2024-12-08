@@ -10,6 +10,8 @@ class Solution:
 
         self.antenas_freq_dict, self.antenas_map, self.max_map_bound = self.read_input(filename=filename) # Stores antenas in dictionary on the basis of frequency (key of dict)
 
+        self.puzzle_number = -1
+
     def read_input(self,filename):
 
         antenas_freq_dict = {}
@@ -57,6 +59,36 @@ class Solution:
 
         return antenas_freq_dict, antenas_map, max_map_bound
     
+    def resonate_antinodes(self, antena, row_offset, col_offset):
+
+        """
+        (Resonance) Generate antinodes for antena aligned to other same frequency antena.
+        """
+
+        resonated_antinodes = set()
+
+        resonated_antinodes.add(antena)
+
+        prev_antinode = antena
+
+        while True:
+
+            new_antinode = (prev_antinode[0]+row_offset, prev_antinode[1]+col_offset)
+
+            if new_antinode[0] >= 0 and new_antinode[0] < self.max_map_bound and new_antinode[1] >=0 and new_antinode[1] < self.max_map_bound:
+
+                self.antenas_map[new_antinode[0]][new_antinode[1]] = '#'
+
+                resonated_antinodes.add(new_antinode)
+
+                prev_antinode = new_antinode
+            
+            else:
+
+                break
+
+        return resonated_antinodes
+    
     def create_antinodes(self):
 
         """
@@ -91,39 +123,75 @@ class Solution:
 
                         if antena_1[0] > antena_2[0]:
 
-                            new_antinodes.append((antena_1[0]+row_diff, antena_1[1]-col_diff)) # left antinode
+                            if self.puzzle_number == 1:
 
-                            new_antinodes.append((antena_2[0]-row_diff, antena_2[1]+col_diff)) # right antinode
+                                new_antinodes.append((antena_1[0]+row_diff, antena_1[1]-col_diff)) # left antinode
+
+                                new_antinodes.append((antena_2[0]-row_diff, antena_2[1]+col_diff)) # right antinode
+                            
+                            elif self.puzzle_number == 2:
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_1, row_diff, -col_diff)) # Resonate left antinode
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_2, -row_diff, col_diff)) # Resonate right antinode
 
                         else:
 
-                            new_antinodes.append((antena_1[0]-row_diff, antena_1[1]-col_diff)) # left antinode
+                            if self.puzzle_number == 1:
 
-                            new_antinodes.append((antena_2[0]+row_diff, antena_2[1]+col_diff)) # right antinode
-                    
+                                new_antinodes.append((antena_1[0]-row_diff, antena_1[1]-col_diff)) # left antinode
+
+                                new_antinodes.append((antena_2[0]+row_diff, antena_2[1]+col_diff)) # right antinode
+
+                            elif self.puzzle_number == 2:
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_1, -row_diff, -col_diff)) # Resonate left antinode
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_2, row_diff, col_diff)) # Resonate right antinode
+
                     else:
 
                         if antena_2[0] > antena_1[0]:
 
-                            new_antinodes.append((antena_2[0]+row_diff, antena_2[1]-col_diff)) # left antinode
+                            if self.puzzle_number == 1:
 
-                            new_antinodes.append((antena_1[0]-row_diff, antena_1[1]+col_diff)) # right antinode
+                                new_antinodes.append((antena_2[0]+row_diff, antena_2[1]-col_diff)) # left antinode
+
+                                new_antinodes.append((antena_1[0]-row_diff, antena_1[1]+col_diff)) # right antinode
+                            
+                            elif self.puzzle_number == 2:
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_2, row_diff, -col_diff)) # Resonate left antinode
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_1, -row_diff, col_diff)) # Resonate right antinode
+
 
                         else:
 
-                            new_antinodes.append((antena_2[0]-row_diff, antena_2[1]-col_diff)) # left antinode
+                            if self.puzzle_number == 1:
 
-                            new_antinodes.append((antena_1[0]+row_diff, antena_1[1]+col_diff)) # right antinode
+                                new_antinodes.append((antena_2[0]-row_diff, antena_2[1]-col_diff)) # left antinode
+
+                                new_antinodes.append((antena_1[0]+row_diff, antena_1[1]+col_diff)) # right antinode
+
+                            elif self.puzzle_number == 2:
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_2, -row_diff, -col_diff)) # Resonate left antinode
+
+                                antinodes = antinodes.union(self.resonate_antinodes(antena_1, row_diff, col_diff)) # Resonate right antinode
 
 
                     # Add only map bound antinodes
-                    for anti in new_antinodes:
 
-                        if anti[0] >= 0 and anti[0] < self.max_map_bound and anti[1] >=0 and anti[1] < self.max_map_bound:
+                    if self.puzzle_number == 1:
 
-                            self.antenas_map[anti[0]][anti[1]] = '#'
+                        for anti in new_antinodes:
 
-                            antinodes.add(anti)
+                            if anti[0] >= 0 and anti[0] < self.max_map_bound and anti[1] >=0 and anti[1] < self.max_map_bound:
+
+                                self.antenas_map[anti[0]][anti[1]] = '#'
+
+                                antinodes.add(anti)
 
         return antinodes
     
@@ -133,24 +201,22 @@ class Solution:
 
             print("".join(row))
 
-    def solve_puzzle_1(self):
+    def solve(self, puzzle_number):
+
+        self.puzzle_number = puzzle_number
 
         antinodes = self.create_antinodes()
 
         return len(antinodes)
-    
-    def solve_puzzle_2(self):
-
-        pass
 
 if __name__ == "__main__":
 
-    s = Solution('sample-input-day-8.txt')
+    s = Solution('input-day-8.txt')
 
-    answer_puzzle_1 = s.solve_puzzle_1()
+    answer_puzzle_1 = s.solve(puzzle_number=1)
 
     print("Answer of Puzzle#1:", answer_puzzle_1)
 
-    # answer_puzzle_2 = s.solve_puzzle_2()
+    answer_puzzle_2 = s.solve(puzzle_number=2)
 
-    # print("Answer of Puzzle#2:", answer_puzzle_2)
+    print("Answer of Puzzle#2:", answer_puzzle_2)
