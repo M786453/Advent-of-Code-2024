@@ -11,15 +11,7 @@ class Solution:
 
         self.data = self.read_input(filename=filename)
 
-        for test in self.data:
-
-            if len(test[1]) == 1:
-
-                print(test)
-            
-            elif len(test[1]) == 0:
-
-                print(test)
+        self.puzzle_number = -1
 
     def read_input(self,filename):
 
@@ -75,6 +67,8 @@ class Solution:
                             result = result * val
                         elif op == '+':
                             result = result + val
+                        elif op == '||':
+                            result = int(f'{result}{val}')
                 
                 if result > test_value:
                     break # Stop evaluating because result becomes greater than test_value
@@ -83,7 +77,7 @@ class Solution:
 
             print("Error in evaluate_combination():", e)
 
-        return result
+        return result == test_value
     
     def generate_operators_combinations(self, total_operator_positions):
 
@@ -93,22 +87,37 @@ class Solution:
 
         combinations = set()
 
-        op_dict = {'*': '+', '+': '*'}
+        operators_list = []
+
+        op_dict = {}
+        
+        if self.puzzle_number == 1:
+            op_dict = {'*': ['+'], '+': ['*']}
+            operators_list = ['*', '+']
+        elif self.puzzle_number == 2:
+            op_dict = {'*': ['+', '||'], '+': ['*', '||'], '||': ['+', '*']}
+            operators_list = ['*', '+', '||']
+        
+        else:
+            return combinations
 
         try:
-            for op in ['*','+']:
 
-                op_comb = [op_dict[op]] * total_operator_positions
+            for op in operators_list:
 
-                for i in range(1,total_operator_positions+1):
+                for adj_op in op_dict[op]:
 
-                    new_op_comb = tuple([op] * i + op_comb[i:])
+                    op_comb = [adj_op] * total_operator_positions
 
-                    if len(new_op_comb) == total_operator_positions and new_op_comb not in combinations:
+                    for i in range(1,total_operator_positions+1):
 
-                        combinations.add(new_op_comb)
+                        new_op_comb = tuple([op] * i + op_comb[i:])
 
-                        combinations = combinations.union(set(permutations(new_op_comb)))        
+                        if len(new_op_comb) == total_operator_positions and new_op_comb not in combinations:
+
+                            combinations.add(new_op_comb)
+
+                            combinations = combinations.union(set(permutations(new_op_comb)))        
 
         except Exception as e:
 
@@ -150,7 +159,9 @@ class Solution:
 
         return combinations
     
-    def solve_puzzle_1(self):
+    def solve(self, puzzle_number):
+
+        self.puzzle_number = puzzle_number
 
         total = 0
 
@@ -166,9 +177,11 @@ class Solution:
 
             combinations = s.generate_combinations(nums_list)
 
+            print("Num List Length:", len(nums_list), "Total Combinations:", len(combinations))
+
             for comb in combinations:
 
-                if s.evaluate_combination(comb, test_value) == test_value:
+                if s.evaluate_combination(comb, test_value):
 
                     total += test_value
 
@@ -177,19 +190,19 @@ class Solution:
             counter += 1
 
         return total
-    
-    def solve_puzzle_2(self):
-
-        pass
 
 if __name__ == "__main__":
 
     s = Solution('input-day-7.txt')
 
-    answer_puzzle_1 = s.solve_puzzle_1()
+    s.puzzle_number = 1
+
+    # print(len(s.generate_operators_combinations(3)))
+
+    answer_puzzle_1 = s.solve(puzzle_number=1)
 
     print("Answer of Puzzle#1:", answer_puzzle_1)
 
-    # answer_puzzle_2 = s.solve_puzzle_2()
+    # answer_puzzle_2 = s.solve(puzzle_number=2)
 
     # print("Answer of Puzzle#2:", answer_puzzle_2)
