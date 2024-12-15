@@ -3,12 +3,15 @@ Day#: 15
 Problem Title: Warehouse Woes
 Author: Muhammad Ahtesham Sarwar
 """
+from copy import deepcopy
 
-warehouse_map, robot_movements = open('input-day-15.txt', 'r').read().split('\n\n')
+warehouse_map, robot_movements = open('example-input-day-15.txt', 'r').read().split('\n\n')
 
 robot_movements = robot_movements.replace('\n','') # Remove newlines
 
 warehouse_map = [list(row) for row in warehouse_map.split('\n')]
+
+original_warehouse_map = deepcopy(warehouse_map)
 
 warehouse_max_rows = len(warehouse_map)
 
@@ -51,13 +54,13 @@ def find_boxes(robot_cords, movement):
             
             robot_cords = new_cords
 
-def show_map():
+def show_map(map_):
 
     print()
 
     print()
 
-    for row in warehouse_map:
+    for row in map_:
         print(''.join(row))
 
 def get_boxes_gps_cords():
@@ -110,9 +113,13 @@ def move_robot():
 
                 robot_cords = boxes[0]
 
-if __name__ == "__main__":
+def solve_puzzle_1():
 
     # Implement robot movements
     move_robot()
 
     print('Answer Puzzle#1:',sum(get_boxes_gps_cords()))
+
+if __name__ == "__main__":
+
+    solve_puzzle_1()
