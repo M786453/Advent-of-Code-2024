@@ -36,7 +36,7 @@ class Solution:
     
     def shortest_path(self, map_, map_bound, start, end):
 
-        # Find shortest path using BFS (Breath First Search)
+        # Find shortest path using BFS (Breadth-First Search)
 
         directions = [(-1,0),(1,0),(0,-1),(0,1)] # Up, Down, Left, Right
 
@@ -60,7 +60,7 @@ class Solution:
 
                 if 0 <= nx < map_bound and 0 <= ny < map_bound and map_[nx][ny] == '.' and (nx,ny) not in visited:
 
-                    queue.append((nx,ny, dist+1))
+                    queue.append((nx, ny, dist+1))
 
                     visited.add((nx,ny))
    
@@ -68,6 +68,10 @@ class Solution:
 
 
     def solve_puzzle_1(self, bytes_fallen, map_bound, start, end):
+
+        """
+        Find the minimum number of steps needed to reach the exit from starting position.
+        """
         
         map_ = self.generate_map(map_bound, bytes_fallen)
 
@@ -75,13 +79,17 @@ class Solution:
     
     def solve_puzzle_2(self, bytes_fallen, map_bound, start, end):
 
+        """
+        Find coordinates of the first byte that will prevent the exit from being reachable from starting position.
+        """
+
         map_ = self.generate_map(map_bound, bytes_fallen)
 
         for cord in self.corrupted_cords[bytes_fallen:]:
 
-            map_[cord[0]][cord[1]] = '#'
+            map_[cord[0]][cord[1]] = '#' # Adding fallen byte (corrupted space) in map; it is not walkable
 
-            if self.shortest_path(map_, map_bound, start, end) == -1:
+            if self.shortest_path(map_, map_bound, start, end) == -1: # Exit not reachable
 
                 print('Answer Puzzle#2:', f'{cord[1]},{cord[0]}')
 
