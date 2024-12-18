@@ -72,9 +72,25 @@ class Solution:
         map_ = self.generate_map(map_bound, bytes_fallen)
 
         print('Answer Puzzle#1:',self.shortest_path(map_, map_bound, start, end))
+    
+    def solve_puzzle_2(self, bytes_fallen, map_bound, start, end):
+
+        map_ = self.generate_map(map_bound, bytes_fallen)
+
+        for cord in self.corrupted_cords[bytes_fallen:]:
+
+            map_[cord[0]][cord[1]] = '#'
+
+            if self.shortest_path(map_, map_bound, start, end) == -1:
+
+                print('Answer Puzzle#2:', f'{cord[1]},{cord[0]}')
+
+                break
 
 if __name__ == "__main__":
 
     s = Solution(filename='input-day-18.txt')
 
     s.solve_puzzle_1(bytes_fallen=1024, map_bound=71, start=(0,0), end=(70,70))
+
+    s.solve_puzzle_2(bytes_fallen=1024, map_bound=71, start=(0,0), end=(70,70))
