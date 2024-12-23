@@ -14,6 +14,13 @@ class Soultion:
         self.track_bound = len(self.race_track)
 
         self.race_start, self.race_end = self.find_cords()
+  
+        self.directions = [
+                      (-1,0), # UP
+                      (1,0),  # DOWN
+                      (0,-1), # LEFT
+                      (0,1)   # RIGHT
+                      ]
 
     def show_track(self):
 
@@ -52,13 +59,6 @@ class Soultion:
 
         Each step of race track is equal to one picosecond duration.
         """
-
-        directions = [
-                      (-1,0), # UP
-                      (1,0),  # DOWN
-                      (0,-1), # LEFT
-                      (0,1)   # RIGHT
-                      ]
         
         queue = deque([(self.race_start[0], self.race_start[1], 0)]) # x,y, duration
         
@@ -74,7 +74,7 @@ class Soultion:
                 return visited, duration
             
             # Check neighbors
-            for dx, dy in directions:
+            for dx, dy in self.directions:
 
                 nx, ny = x + dx, y + dy
 
@@ -84,14 +84,56 @@ class Soultion:
 
                     visited.append((nx, ny))
 
-        return -1
+        return [],-1
+
+    def race_condition(self):
+
+        """
+        Race condition allows cheat once in a race by disabling collision with wall for 2 steps (picoseconds).
+        """
+
+        duration_cheat_map = {} # {"picoseconds": [[cheat_step_1, cheat_step_2]]}
+
+        original_shortest_path, original_shortest_duration = self.shortest_duration() # coordinates list, duration (picoseconds)
+
+        original_shortest_path.pop() # Remove 'End' cords from path
+
+        # Apply cheat on every obstacle adjacent to every cords of origina_shortest_path 
+        for i in range(len(original_shortest_path)):            
+
+            duration = i+2
+
+            x,y = original_shortest_path[i]
+
+            for dx, dy in self.directions:
+
+                nx, ny = x + dx, y + dy
+
+                # Check for obstacle
+                if 0 <= nx < self.track_bound and 0 <= ny < self.track_bound and self.race_track[nx][ny] == '#':
+
+                    self.race_start = (nx,ny)
+
+                    shortest_path, shortest_duration = self.shortest_duration()
+
+                    shortest_duration += duration
+
+                    saved_duration = original_shortest_duration - shortest_duration
+
+                    if saved_duration in duration_cheat_map:
+                        duration_cheat_map[saved_duration].append(shortest_path[:2])
+                    else:
+                        duration_cheat_map[saved_duration] = [shortest_path[:2]]
+    
+        for d in duration_cheat_map:
+
+            print(len(duration_cheat_map[d]), d)
 
 if __name__ == "__main__":
 
-    s = Soultion('example-input-day-20.txt')
+    s = Soultion('input-day-20.txt')
 
-    visited, duration = s.shortest_duration()
-    visited.pop() # Remove 'End' cords from visited
-    print("Start:", s.race_start, "End:", s.race_end)
-    print("Visited:", visited)
-    print("Duration:", duration)
+    s.race_condition()
+
+    
+   
