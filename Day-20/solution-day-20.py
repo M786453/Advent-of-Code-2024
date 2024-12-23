@@ -60,18 +60,18 @@ class Soultion:
                       (0,1)   # RIGHT
                       ]
         
-        queue = deque([(self.race_start[0], self.race_start[1], 0)]) # x,y, distance
+        queue = deque([(self.race_start[0], self.race_start[1], 0)]) # x,y, duration
         
-        visited = set()
+        visited = list()
 
         while queue:
 
-            x, y, dist = queue.popleft()
+            x, y, duration = queue.popleft()
 
             # Check whether destination is reached
             if (x,y) == self.race_end:
 
-                return dist
+                return visited, duration
             
             # Check neighbors
             for dx, dy in directions:
@@ -80,15 +80,18 @@ class Soultion:
 
                 if 0 <= nx < self.track_bound and 0 <= ny < self.track_bound and (self.race_track[nx][ny] == '.' or self.race_track[nx][ny] == 'E') and (nx,ny) not in visited:
 
-                    queue.append((nx, ny, dist+1))
+                    queue.append((nx, ny, duration+1))
 
-                    visited.add((nx, ny))
+                    visited.append((nx, ny))
 
-        return -1        
+        return -1
 
 if __name__ == "__main__":
 
     s = Soultion('example-input-day-20.txt')
 
-    print("Shortest Duration:", s.shortest_duration())
-    
+    visited, duration = s.shortest_duration()
+    visited.pop() # Remove 'End' cords from visited
+    print("Start:", s.race_start, "End:", s.race_end)
+    print("Visited:", visited)
+    print("Duration:", duration)
