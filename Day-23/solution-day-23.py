@@ -1,6 +1,4 @@
-from itertools import combinations
-
-networks = open('example-input-day-23.txt','r').read().split('\n')
+networks = open('input-day-23.txt','r').read().split('\n')
 
 computers_connections = {}
 
@@ -21,30 +19,31 @@ for net in networks:
     add_computer_conn(c1, c2)
     add_computer_conn(c2, c1)
 
-# Interconnected computers set
+# Pairs of Three Interconnected computers set
 three_ics_pair = set()
-for c in computers_connections:
 
-    interconnected_computers = [c] # Computers which are connected with each other
+for c in computers_connections:
 
     connected_computers = computers_connections[c] # computers connected to current computer
 
-    for cc in connected_computers:
+    for i in range(len(connected_computers)):
 
-        if all([ic in computers_connections[cc] for ic in interconnected_computers]):
-            interconnected_computers.append(cc)
+        for j in range(len(connected_computers)):
 
-    interconnected_computers.sort()
+            c1 = connected_computers[i]
+            c2 = connected_computers[j]
 
-    if len(interconnected_computers) > 3:
-        for comb in combinations(interconnected_computers, 3):
-            three_ics_pair.add(tuple(comb))
-    elif len(interconnected_computers) == 3:
-        three_ics_pair.add(tuple(interconnected_computers))
+            if c1 != c2:
+                
+                if c1 in computers_connections[c2]:
+                    ics = [c, c1, c2] # Interconnected computers
+                    if any([c.startswith('t')for c in ics]):
+                        ics.sort()
+                        three_ics_pair.add(tuple(ics))
 
-# print(computers_connections)
-for ics in three_ics_pair:
-    ics = list(ics)
-    print(",".join(ics))
+print(len(three_ics_pair))
+# for ics in three_ics_pair:
+#     ics = list(ics)
+#     print(",".join(ics))
 
 
