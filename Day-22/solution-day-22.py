@@ -21,17 +21,21 @@ def generate_last_secret(secretNum):
 
     return secretNum
 
+def solve_puzzle_1(initial_secrets_list):
+
+    last_sec_list = []
+
+    for init_sec in initial_secrets_list:
+
+        last_sec_list.append(generate_last_secret(int(init_sec)))
+
+    print('Answer Puzzle#1:',sum(last_sec_list))
+
 
 with open('input-day-22.txt','r') as f:
 
     data = f.read()
 
-    dataList = data.split('\n')
+    initial_secrets_list = data.split('\n')
 
-    lastSecNumList = []
-
-    for initsecnum in dataList:
-
-        lastSecNumList.append(generate_last_secret(int(initsecnum)))
-
-    print(sum(lastSecNumList))
+    solve_puzzle_1(initial_secrets_list)
