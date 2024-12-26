@@ -1,4 +1,4 @@
-def generateSecList(s):
+def generate_secret(s):
 
     step1 = ((s * 64) ^ s) % 16777216
     
@@ -9,13 +9,13 @@ def generateSecList(s):
     return step3
 
 
-def generateLastSecNum(secretNum):
+def generate_last_secret(secretNum):
 
     x = 0
 
     while x < 2000:
 
-        secretNum = generateSecList(secretNum)
+        secretNum = generate_secret(secretNum)
 
         x = x + 1
 
@@ -32,6 +32,6 @@ with open('input-day-22.txt','r') as f:
 
     for initsecnum in dataList:
 
-        lastSecNumList.append(generateLastSecNum(int(initsecnum)))
+        lastSecNumList.append(generate_last_secret(int(initsecnum)))
 
     print(sum(lastSecNumList))
